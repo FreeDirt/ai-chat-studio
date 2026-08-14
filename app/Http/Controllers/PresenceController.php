@@ -68,9 +68,11 @@ class PresenceController extends Controller
                 'created_at'       => $m->created_at->format('H:i'),
             ]);
 
+        // Only include OTHER team members who are typing (never show "You is typing")
         $typingUsers = $onlineUsers
             ->where('is_typing', true)
-            ->map(fn($u) => $u->id === auth()->id() ? 'You' : $u->name)
+            ->where('id', '!=', auth()->id())
+            ->map(fn($u) => $u->name)
             ->values()
             ->toArray();
 

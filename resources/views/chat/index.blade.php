@@ -154,19 +154,15 @@
                     @include('chat._message', ['msg' => $msg])
                 @endforeach
             @endif
-
-            <!-- Team Typing Indicator -->
-            <div id="team-typing-indicator" class="message hidden" style="display:none;opacity:0.95;margin-top:12px">
-                <div class="msg-avatar" style="background:var(--bg-elevated);border:1px solid var(--border)">✍️</div>
-                <div class="msg-body" style="padding:10px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg)">
-                    <div style="font-size:12px;color:var(--accent-light);font-weight:700;display:flex;align-items:center;gap:6px">
-                        <span id="typing-users-text">Someone is typing...</span>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="input-area">
+            <!-- Sleek Floating Team Typing Bar -->
+            <div id="team-typing-indicator" class="team-typing-bar hidden" style="display:none">
+                <span class="typing-pulse-dot"></span>
+                <span id="typing-users-text">Someone is typing...</span>
+            </div>
+
             <div class="input-wrapper">
                 <!-- Prompt Library Popover Menu -->
                 <div class="prompt-popover hidden" id="prompt-library-popover">
@@ -2118,8 +2114,17 @@ async function sendPresenceHeartbeat() {
             const typingText = document.getElementById('typing-users-text');
             if (typingIndicator && typingText) {
                 if (res.typing_users && Array.isArray(res.typing_users) && res.typing_users.length > 0) {
-                    typingText.textContent = `✍️ ${res.typing_users.join(', ')} ${res.typing_users.length > 1 ? 'are' : 'is'} typing...`;
-                    typingIndicator.style.display = 'flex';
+                    const names = res.typing_users;
+                    let text = '';
+                    if (names.length === 1) {
+                        text = `✍️ ${names[0]} is typing...`;
+                    } else if (names.length === 2) {
+                        text = `✍️ ${names[0]} and ${names[1]} are typing...`;
+                    } else {
+                        text = `✍️ ${names[0]} and ${names.length - 1} others are typing...`;
+                    }
+                    typingText.textContent = text;
+                    typingIndicator.style.display = 'inline-flex';
                     typingIndicator.classList.remove('hidden');
                 } else {
                     typingIndicator.style.display = 'none';
@@ -2147,12 +2152,7 @@ async function sendPresenceHeartbeat() {
                                 author_name: msg.author_name
                             });
 
-                            if (typingIndicator) {
-                                messagesArea.insertBefore(msgEl, typingIndicator);
-                            } else {
-                                messagesArea.appendChild(msgEl);
-                            }
-
+                            messagesArea.appendChild(msgEl);
                             document.getElementById('empty-state')?.remove();
                         }
                     });
@@ -2729,5 +2729,37 @@ window.addEventListener('DOMContentLoaded', () => {
     flex-shrink: 0;
 }
 .btn-sidebar-toggle:hover { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border-strong); }
+
+/* Floating Team Typing Bar */
+.team-typing-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    margin: 0 auto 8px 16px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent-light);
+    background: rgba(108,99,255,0.08);
+    border: 1px solid rgba(108,99,255,0.22);
+    border-radius: 99px;
+    width: fit-content;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.2s ease-in-out;
+}
+.team-typing-bar.hidden {
+    display: none !important;
+}
+.typing-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: typingPulseAnim 1.2s infinite ease-in-out;
+}
+@keyframes typingPulseAnim {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
 </style>
 @endpush
