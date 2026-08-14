@@ -69,7 +69,27 @@ class ChatController extends Controller
 
         $messages = $conversation ? $conversation->messages : collect();
 
-        return view('chat.index', compact('myConversations', 'sharedConversations', 'personas', 'provider', 'conversation', 'messages', 'userPermission'));
+        $activeKeyConfigured = match ($provider) {
+            'openai'     => !empty(Setting::get('openai_api_key')),
+            'openrouter' => !empty(Setting::get('openrouter_api_key')),
+            'claude'     => !empty(Setting::get('claude_api_key')),
+            'gemini'     => !empty(Setting::get('gemini_api_key')),
+            'ollama'     => !empty(Setting::get('ollama_url')),
+            default      => false,
+        };
+        $activeModel = Setting::get($provider . '_model', 'default');
+
+        return view('chat.index', compact(
+            'myConversations',
+            'sharedConversations',
+            'personas',
+            'provider',
+            'activeModel',
+            'activeKeyConfigured',
+            'conversation',
+            'messages',
+            'userPermission'
+        ));
     }
 
     /**

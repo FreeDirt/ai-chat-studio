@@ -58,38 +58,96 @@
             <!-- ===== TAB 1: AI PROVIDERS ===== -->
             <div class="settings-tab-pane active" id="tab-providers">
                 
+                @php
+                    $providers = [
+                        'openai'     => ['icon' => '🧠', 'name' => 'OpenAI',      'badge' => 'GPT-4o, o3-mini', 'tag' => 'Industry Standard'],
+                        'openrouter' => ['icon' => '🔀', 'name' => 'OpenRouter',  'badge' => '100+ Models',     'tag' => 'Multi-Provider'],
+                        'claude'     => ['icon' => '🤖', 'name' => 'Claude',      'badge' => 'Anthropic AI',    'tag' => 'Reasoning & Coding'],
+                        'gemini'     => ['icon' => '💎', 'name' => 'Gemini',      'badge' => 'Google 2.5 Flash','tag' => 'Fast & Multimodal'],
+                        'ollama'     => ['icon' => '🦙', 'name' => 'Ollama',      'badge' => 'Local & Offline', 'tag' => '100% Private'],
+                    ];
+                    $activeProvider = $settings['ai_provider'] ?? 'openai';
+
+                    $activeKeySet = match($activeProvider) {
+                        'openai'     => !empty($settings['openai_api_key']),
+                        'openrouter' => !empty($settings['openrouter_api_key']),
+                        'claude'     => !empty($settings['claude_api_key']),
+                        'gemini'     => !empty($settings['gemini_api_key']),
+                        'ollama'     => !empty($settings['ollama_url']),
+                        default      => false
+                    };
+                    $activeModelName = $settings[$activeProvider . '_model'] ?? 'Default Model';
+                @endphp
+
+                <!-- Active Engine Status Banner -->
+                <div class="active-engine-banner" style="margin-bottom:20px;padding:16px 20px;border-radius:var(--radius-xl);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;background:{{ $activeKeySet ? 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(15,23,42,0.6))' : 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(15,23,42,0.6))' }};border:1px solid {{ $activeKeySet ? 'rgba(34,197,94,0.35)' : 'rgba(245,158,11,0.35)' }};">
+                    <div style="display:flex;align-items:center;gap:14px">
+                        <div style="width:44px;height:44px;border-radius:var(--radius-lg);background:{{ $activeKeySet ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)' }};display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid {{ $activeKeySet ? 'rgba(34,197,94,0.4)' : 'rgba(245,158,11,0.4)' }}">
+                            {{ $providers[$activeProvider]['icon'] ?? '🤖' }}
+                        </div>
+                        <div>
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <span style="font-size:15px;font-weight:800;color:var(--text-primary)">
+                                    Active AI Engine: {{ $providers[$activeProvider]['name'] ?? ucfirst($activeProvider) }}
+                                </span>
+                                <span style="font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--accent-light);font-family:var(--font-mono)">
+                                    {{ $activeModelName }}
+                                </span>
+                            </div>
+                            <div style="font-size:12px;margin-top:4px;color:{{ $activeKeySet ? 'var(--success)' : 'var(--warning)' }};font-weight:600;display:flex;align-items:center;gap:6px">
+                                <span style="width:7px;height:7px;border-radius:50%;background:{{ $activeKeySet ? 'var(--success)' : 'var(--warning)' }};display:inline-block"></span>
+                                <span>{{ $activeKeySet ? 'API Key Configured & Ready for Chat Generation' : '⚠️ No API Key saved for ' . ($providers[$activeProvider]['name'] ?? $activeProvider) . ' — Enter your key below and click Save' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('btn-test-conn').click()" style="font-size:12px;padding:6px 14px;font-weight:600">
+                        <span>🔬</span> Quick Ping Test
+                    </button>
+                </div>
+
                 <!-- Provider Selector Grid -->
                 <div class="settings-section-card">
                     <div class="section-card-header">
                         <div>
-                            <div class="section-title">Active AI Provider</div>
-                            <div class="section-desc">Select the default AI provider for your conversations</div>
+                            <div class="section-title">Select Active AI Provider</div>
+                            <div class="section-desc">Choose which AI backend powers new chat completions and responses</div>
                         </div>
                     </div>
 
-                    @php
-                        $providers = [
-                            'openai'     => ['icon' => '🧠', 'name' => 'OpenAI',      'badge' => 'GPT-4o, o3-mini', 'tag' => 'Industry Standard'],
-                            'openrouter' => ['icon' => '🔀', 'name' => 'OpenRouter',  'badge' => '100+ Models',     'tag' => 'Multi-Provider'],
-                            'claude'     => ['icon' => '🤖', 'name' => 'Claude',      'badge' => 'Anthropic AI',    'tag' => 'Reasoning & Coding'],
-                            'gemini'     => ['icon' => '💎', 'name' => 'Gemini',      'badge' => 'Google 2.5 Flash','tag' => 'Fast & Multimodal'],
-                            'ollama'     => ['icon' => '🦙', 'name' => 'Ollama',      'badge' => 'Local & Offline', 'tag' => '100% Private'],
-                        ];
-                        $activeProvider = $settings['ai_provider'] ?? 'openai';
-                    @endphp
-
                     <div class="provider-selection-grid" id="provider-tabs">
                         @foreach($providers as $key => $p)
+                            @php
+                                $isKeySet = match($key) {
+                                    'openai'     => !empty($settings['openai_api_key']),
+                                    'openrouter' => !empty($settings['openrouter_api_key']),
+                                    'claude'     => !empty($settings['claude_api_key']),
+                                    'gemini'     => !empty($settings['gemini_api_key']),
+                                    'ollama'     => !empty($settings['ollama_url']),
+                                    default      => false
+                                };
+                                $pModel = $settings[$key . '_model'] ?? '';
+                            @endphp
                             <div class="provider-card {{ $activeProvider === $key ? 'active' : '' }}" data-provider="{{ $key }}">
                                 <div class="provider-card-top">
                                     <span class="provider-card-icon">{{ $p['icon'] }}</span>
-                                    <span class="provider-tag-pill">{{ $p['tag'] }}</span>
+                                    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                                        <span class="provider-tag-pill">{{ $p['tag'] }}</span>
+                                        @if($isKeySet)
+                                            <span style="font-size:10px;font-weight:700;color:var(--success);background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 7px;border-radius:99px;display:inline-flex;align-items:center;gap:4px">
+                                                <span style="width:5px;height:5px;border-radius:50%;background:var(--success)"></span> Set
+                                            </span>
+                                        @else
+                                            <span style="font-size:10px;font-weight:700;color:var(--warning);background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 7px;border-radius:99px;display:inline-flex;align-items:center;gap:4px">
+                                                <span style="width:5px;height:5px;border-radius:50%;background:var(--warning)"></span> No Key
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="provider-card-name">{{ $p['name'] }}</div>
-                                <div class="provider-card-badge">{{ $p['badge'] }}</div>
+                                <div class="provider-card-badge" style="font-family:var(--font-mono);font-size:11px">{{ $pModel ?: $p['badge'] }}</div>
                                 <div class="provider-active-indicator">
                                     <span class="indicator-dot"></span>
-                                    <span>Active</span>
+                                    <span>Active Default</span>
                                 </div>
                             </div>
                         @endforeach
@@ -114,12 +172,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">OpenAI Secret API Key</label>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <label class="form-label" style="margin-bottom:0">OpenAI Secret API Key</label>
+                            @if(!empty($settings['openai_api_key']))
+                                <span style="font-size:11px;color:var(--success);font-weight:700;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px">
+                                    ● Key Saved in DB
+                                </span>
+                            @else
+                                <span style="font-size:11px;color:var(--warning);font-weight:700;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:99px">
+                                    ▲ Key Missing
+                                </span>
+                            @endif
+                        </div>
                         <div class="key-input-wrap">
                             <input type="password" id="openai_api_key" class="form-input" value="{{ $settings['openai_api_key'] ?? '' }}" placeholder="sk-proj-...">
                             <button type="button" class="key-toggle-btn" data-target="openai_api_key" title="Toggle visibility">👁</button>
                         </div>
-                        <div class="field-hint">Never shared. Kept encrypted on your server.</div>
+                        <div class="field-hint">Never shared. Kept encrypted in your MariaDB database.</div>
                     </div>
 
                     @include('settings._model_field', [
@@ -146,7 +215,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">OpenRouter API Key</label>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <label class="form-label" style="margin-bottom:0">OpenRouter API Key</label>
+                            @if(!empty($settings['openrouter_api_key']))
+                                <span style="font-size:11px;color:var(--success);font-weight:700;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px">
+                                    ● Key Saved in DB
+                                </span>
+                            @else
+                                <span style="font-size:11px;color:var(--warning);font-weight:700;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:99px">
+                                    ▲ Key Missing
+                                </span>
+                            @endif
+                        </div>
                         <div class="key-input-wrap">
                             <input type="password" id="openrouter_api_key" class="form-input" value="{{ $settings['openrouter_api_key'] ?? '' }}" placeholder="sk-or-v1-...">
                             <button type="button" class="key-toggle-btn" data-target="openrouter_api_key" title="Toggle visibility">👁</button>
@@ -177,7 +257,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Anthropic API Key</label>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <label class="form-label" style="margin-bottom:0">Anthropic API Key</label>
+                            @if(!empty($settings['claude_api_key']))
+                                <span style="font-size:11px;color:var(--success);font-weight:700;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px">
+                                    ● Key Saved in DB
+                                </span>
+                            @else
+                                <span style="font-size:11px;color:var(--warning);font-weight:700;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:99px">
+                                    ▲ Key Missing
+                                </span>
+                            @endif
+                        </div>
                         <div class="key-input-wrap">
                             <input type="password" id="claude_api_key" class="form-input" value="{{ $settings['claude_api_key'] ?? '' }}" placeholder="sk-ant-api03-...">
                             <button type="button" class="key-toggle-btn" data-target="claude_api_key" title="Toggle visibility">👁</button>
@@ -208,7 +299,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Google Gemini API Key</label>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <label class="form-label" style="margin-bottom:0">Google Gemini API Key</label>
+                            @if(!empty($settings['gemini_api_key']))
+                                <span style="font-size:11px;color:var(--success);font-weight:700;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px">
+                                    ● Key Saved in DB
+                                </span>
+                            @else
+                                <span style="font-size:11px;color:var(--warning);font-weight:700;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:99px">
+                                    ▲ Key Missing
+                                </span>
+                            @endif
+                        </div>
                         <div class="key-input-wrap">
                             <input type="password" id="gemini_api_key" class="form-input" value="{{ $settings['gemini_api_key'] ?? '' }}" placeholder="AIzaSy...">
                             <button type="button" class="key-toggle-btn" data-target="gemini_api_key" title="Toggle visibility">👁</button>
@@ -239,7 +341,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Ollama Host URL</label>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                            <label class="form-label" style="margin-bottom:0">Ollama Host URL</label>
+                            @if(!empty($settings['ollama_url']))
+                                <span style="font-size:11px;color:var(--success);font-weight:700;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);padding:2px 8px;border-radius:99px">
+                                    ● Endpoint Set
+                                </span>
+                            @else
+                                <span style="font-size:11px;color:var(--warning);font-weight:700;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:99px">
+                                    ▲ URL Not Set
+                                </span>
+                            @endif
+                        </div>
                         <input type="text" id="ollama_url" class="form-input" value="{{ $settings['ollama_url'] ?? 'http://host.docker.internal:11434' }}" placeholder="http://host.docker.internal:11434">
                         <div class="field-hint">From Docker on macOS/Windows use <code>http://host.docker.internal:11434</code></div>
                     </div>

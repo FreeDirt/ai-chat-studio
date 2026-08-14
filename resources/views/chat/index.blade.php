@@ -54,14 +54,15 @@
             </button>
             @endif
 
-            <div class="provider-badge" id="provider-badge">
-                <span class="dot" id="provider-dot"></span>
+            <a href="{{ route('settings.index') }}" class="provider-badge" id="provider-badge" title="{{ $activeKeyConfigured ? 'Active Provider: ' . strtoupper($provider) . ' (' . ($conversation?->model ?? $activeModel) . ') — Click to change in Settings' : '⚠️ API Key is missing for ' . strtoupper($provider) . ' — Click to configure in Settings' }}" style="text-decoration:none">
+                <span class="dot" id="provider-dot" style="background: {{ $activeKeyConfigured ? 'var(--success)' : 'var(--warning)' }}"></span>
                 <span id="provider-label">{{ strtoupper($provider) }}</span>
-                @if($conversation?->model)
-                    <span style="color:var(--text-muted)">·</span>
-                    <span id="model-label" style="font-size:11px;color:var(--text-muted)">{{ $conversation->model }}</span>
+                <span style="color:var(--text-muted)">·</span>
+                <span id="model-label" style="font-size:11px;color:var(--text-muted)">{{ $conversation?->model ?? $activeModel }}</span>
+                @if(!$activeKeyConfigured)
+                    <span style="font-size:10px;color:var(--warning);font-weight:700;margin-left:4px;background:rgba(245,158,11,0.15);padding:1px 6px;border-radius:99px">⚠️ Key Missing</span>
                 @endif
-            </div>
+            </a>
 
             <!-- Export Dropdown -->
             <div class="export-dropdown" id="export-dropdown-container">
