@@ -25,7 +25,10 @@
                         Customize your team workspace identity, primary theme color, logo, and home page welcome titles.
                     </p>
                 </div>
-                <div style="display:flex;gap:10px">
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <a href="{{ route('settings.index') }}" class="btn btn-ghost" style="font-size:12px;padding:8px 14px">
+                        ⚙️ AI Settings
+                    </a>
                     <a href="{{ route('admin.users.index') }}" class="btn btn-ghost" style="font-size:12px;padding:8px 14px">
                         👥 User Admin
                     </a>

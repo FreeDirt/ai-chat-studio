@@ -76,40 +76,26 @@
                 </div>
             </div>
 
-            <!-- ===== THEME COLOR CUSTOMIZER ===== -->
-            <div class="settings-card">
-                <div class="settings-card-header">
-                    <div class="settings-card-icon">🎨</div>
-                    <div>
-                        <div class="settings-card-title">Theme Color & Aesthetics</div>
-                        <div class="settings-card-desc">Personalize your AI Chat workspace color palette</div>
-                    </div>
-                </div>
-                <div class="theme-options-grid">
-                    <div class="theme-card" data-theme="purple">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0a0c10, #151923); border-color: #6c63ff;">
-                            <div class="theme-swatch" style="background: #6c63ff; box-shadow: 0 0 12px rgba(108,99,255,0.6);"></div>
+            <!-- ===== WORKSPACE BRANDING (GLOBAL IDENTITY) ===== -->
+            <div class="settings-card" style="border:1px solid rgba(108,99,255,0.25);background:linear-gradient(135deg,rgba(108,99,255,0.06),rgba(15,23,42,0.6));">
+                <div class="settings-card-header" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <div class="settings-card-icon" style="background:rgba(108,99,255,0.2);color:var(--accent)">🎨</div>
+                        <div>
+                            <div class="settings-card-title">Workspace Branding & Identity</div>
+                            <div class="settings-card-desc">App name, logo, primary theme color, and welcome banners are centrally managed</div>
                         </div>
-                        <div class="theme-name">Purple Glow</div>
                     </div>
-                    <div class="theme-card" data-theme="cyberpunk">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0a0c10, #151923); border-color: #f43f5e;">
-                            <div class="theme-swatch" style="background: #f43f5e; box-shadow: 0 0 12px rgba(244,63,94,0.6);"></div>
+                    @if(auth()->user() && auth()->user()->isSuperAdmin())
+                        <a href="{{ route('admin.branding.index') }}" class="btn btn-primary" style="font-size:12px;padding:8px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-weight:600">
+                            <span>🎨 Open Branding Studio</span>
+                            <span>→</span>
+                        </a>
+                    @else
+                        <div style="font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.05);padding:5px 12px;border-radius:99px;border:1px solid var(--border)">
+                            Managed by Super Admin
                         </div>
-                        <div class="theme-name">Cyberpunk Neon</div>
-                    </div>
-                    <div class="theme-card" data-theme="emerald">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0a0c10, #151923); border-color: #10b981;">
-                            <div class="theme-swatch" style="background: #10b981; box-shadow: 0 0 12px rgba(16,185,129,0.6);"></div>
-                        </div>
-                        <div class="theme-name">Emerald Dark</div>
-                    </div>
-                    <div class="theme-card" data-theme="slate">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0a0c10, #151923); border-color: #3b82f6;">
-                            <div class="theme-swatch" style="background: #3b82f6; box-shadow: 0 0 12px rgba(59,130,246,0.6);"></div>
-                        </div>
-                        <div class="theme-name">Midnight Slate</div>
-                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -335,46 +321,6 @@
     color: var(--text-muted);
     margin-top: 2px;
 }
-
-/* Theme Customizer Grid */
-.theme-options-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 14px;
-}
-.theme-card {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 12px;
-    cursor: pointer;
-    text-align: center;
-    transition: var(--transition);
-}
-.theme-card:hover, .theme-card.active {
-    border-color: var(--accent);
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-.theme-preview {
-    height: 48px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-}
-.theme-swatch {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-}
-.theme-name {
-    font-size: 11.5px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
 .settings-card-title { font-size:15px;font-weight:600; }
 .settings-card-desc { font-size:12px;color:var(--text-muted);margin-top:2px; }
 
@@ -577,31 +523,6 @@ document.querySelectorAll('.mode-card').forEach(card => {
         document.documentElement.setAttribute('data-mode-setting', mode);
 
         toast(`🌓 Appearance set to ${card.querySelector('.mode-name').textContent}!`, 'success');
-    });
-});
-
-// ===== THEME SELECTION HANDLER =====
-const currentTheme = localStorage.getItem('app_theme') || 'purple';
-document.querySelectorAll('.theme-card').forEach(card => {
-    if (card.dataset.theme === currentTheme) {
-        card.classList.add('active');
-    } else {
-        card.classList.remove('active');
-    }
-
-    card.addEventListener('click', () => {
-        const theme = card.dataset.theme;
-        document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-
-        if (theme === 'purple') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.removeItem('app_theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('app_theme', theme);
-        }
-        toast(`🎨 Theme updated to ${card.querySelector('.theme-name').textContent}!`, 'success');
     });
 });
 </script>
