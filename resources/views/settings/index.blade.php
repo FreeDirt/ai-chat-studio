@@ -166,9 +166,15 @@
                                 <div class="section-desc">Connect using your API key from platform.openai.com</div>
                             </div>
                         </div>
-                        <a href="https://platform.openai.com/api-keys" target="_blank" class="external-portal-link">
-                            API Keys Portal ↗
-                        </a>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <button type="button" class="btn btn-default-toggle btn-set-default {{ $activeProvider === 'openai' ? 'is-active-default' : '' }}" data-provider="openai" style="font-size:12px;padding:6px 12px;font-weight:700">
+                                <span>⭐</span>
+                                <span class="btn-default-text">{{ $activeProvider === 'openai' ? 'Current Default Engine' : 'Set as Default Engine' }}</span>
+                            </button>
+                            <a href="https://platform.openai.com/api-keys" target="_blank" class="external-portal-link">
+                                API Keys Portal ↗
+                            </a>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -206,12 +212,18 @@
                             <span class="provider-logo-bubble">🔀</span>
                             <div>
                                 <div class="section-title">OpenRouter Configuration</div>
-                                <div class="section-desc">Access 100+ models (Claude, Llama 3.3, DeepSeek-R1, Mistral) with a single key</div>
+                                <div class="section-desc">Access 100+ models (Claude, Llama 3.3, DeepSeek-R1, Mistral, Free models) with a single key</div>
                             </div>
                         </div>
-                        <a href="https://openrouter.ai/keys" target="_blank" class="external-portal-link">
-                            OpenRouter Keys ↗
-                        </a>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <button type="button" class="btn btn-default-toggle btn-set-default {{ $activeProvider === 'openrouter' ? 'is-active-default' : '' }}" data-provider="openrouter" style="font-size:12px;padding:6px 12px;font-weight:700">
+                                <span>⭐</span>
+                                <span class="btn-default-text">{{ $activeProvider === 'openrouter' ? 'Current Default Engine' : 'Set as Default Engine' }}</span>
+                            </button>
+                            <a href="https://openrouter.ai/keys" target="_blank" class="external-portal-link">
+                                OpenRouter Keys ↗
+                            </a>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -235,8 +247,24 @@
 
                     @include('settings._model_field', [
                         'fieldId'     => 'openrouter_model',
-                        'currentVal'  => $settings['openrouter_model'] ?? 'openai/gpt-4o-mini',
-                        'staticOpts'  => ['openai/gpt-4o','openai/gpt-4o-mini','anthropic/claude-3.5-sonnet','google/gemini-2.0-flash','deepseek/deepseek-r1','meta-llama/llama-3.3-70b-instruct','mistralai/mistral-large'],
+                        'currentVal'  => $settings['openrouter_model'] ?? 'openrouter/free',
+                        'staticOpts'  => [
+                            'openrouter/free',
+                            'openrouter/auto',
+                            'meta-llama/llama-3.3-70b-instruct:free',
+                            'deepseek/deepseek-r1:free',
+                            'deepseek/deepseek-chat:free',
+                            'google/gemini-2.0-flash-exp:free',
+                            'mistralai/mistral-7b-instruct:free',
+                            'qwen/qwen-2.5-72b-instruct:free',
+                            'openai/gpt-4o',
+                            'openai/gpt-4o-mini',
+                            'anthropic/claude-3.5-sonnet',
+                            'google/gemini-2.0-flash',
+                            'deepseek/deepseek-r1',
+                            'meta-llama/llama-3.3-70b-instruct',
+                            'mistralai/mistral-large'
+                        ],
                         'provider'    => 'openrouter',
                     ])
                 </div>
@@ -251,9 +279,15 @@
                                 <div class="section-desc">Claude 3.5 Sonnet, Haiku, and Opus models</div>
                             </div>
                         </div>
-                        <a href="https://console.anthropic.com/settings/keys" target="_blank" class="external-portal-link">
-                            Anthropic Console ↗
-                        </a>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <button type="button" class="btn btn-default-toggle btn-set-default {{ $activeProvider === 'claude' ? 'is-active-default' : '' }}" data-provider="claude" style="font-size:12px;padding:6px 12px;font-weight:700">
+                                <span>⭐</span>
+                                <span class="btn-default-text">{{ $activeProvider === 'claude' ? 'Current Default Engine' : 'Set as Default Engine' }}</span>
+                            </button>
+                            <a href="https://console.anthropic.com/settings/keys" target="_blank" class="external-portal-link">
+                                Anthropic Console ↗
+                            </a>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -293,9 +327,15 @@
                                 <div class="section-desc">Gemini 2.5 Flash, 2.0 Flash, and 1.5 Pro via Google AI Studio</div>
                             </div>
                         </div>
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank" class="external-portal-link">
-                            Google AI Studio ↗
-                        </a>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <button type="button" class="btn btn-default-toggle btn-set-default {{ $activeProvider === 'gemini' ? 'is-active-default' : '' }}" data-provider="gemini" style="font-size:12px;padding:6px 12px;font-weight:700">
+                                <span>⭐</span>
+                                <span class="btn-default-text">{{ $activeProvider === 'gemini' ? 'Current Default Engine' : 'Set as Default Engine' }}</span>
+                            </button>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="external-portal-link">
+                                Google AI Studio ↗
+                            </a>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -335,8 +375,14 @@
                                 <div class="section-desc">Run local models completely private and offline</div>
                             </div>
                         </div>
-                        <div id="ollama-online-badge" class="provider-badge" style="{{ $ollamaOnline ? '' : 'display:none' }}">
-                            <span class="dot" style="background:var(--success)"></span> Online
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                            <div id="ollama-online-badge" class="provider-badge" style="{{ $ollamaOnline ? '' : 'display:none' }}">
+                                <span class="dot" style="background:var(--success)"></span> Online
+                            </div>
+                            <button type="button" class="btn btn-default-toggle btn-set-default {{ $activeProvider === 'ollama' ? 'is-active-default' : '' }}" data-provider="ollama" style="font-size:12px;padding:6px 12px;font-weight:700">
+                                <span>⭐</span>
+                                <span class="btn-default-text">{{ $activeProvider === 'ollama' ? 'Current Default Engine' : 'Set as Default Engine' }}</span>
+                            </button>
                         </div>
                     </div>
 
@@ -925,6 +971,83 @@
 }
 .bottom-actions-hint { font-size: 12px; color: var(--text-muted); }
 
+/* Model Selector Segmented Pills */
+.model-mode-toggle-pills {
+    display: flex;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2px;
+    gap: 2px;
+}
+.model-toggle-pill {
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.model-toggle-pill:hover {
+    color: var(--text-primary);
+}
+.model-toggle-pill.active {
+    background: var(--bg-elevated);
+    color: var(--accent-light);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.model-mode-view.hidden { display: none !important; }
+
+/* Custom Model Input */
+.custom-model-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.custom-model-prefix-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 14px;
+    color: var(--accent);
+}
+.custom-model-styled-input {
+    padding-left: 36px !important;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: rgba(108,99,255,0.04);
+    border: 1px solid var(--accent);
+}
+.custom-model-styled-input:focus {
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Default Engine Toggle Button */
+.btn-default-toggle {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-default-toggle:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+.btn-default-toggle.is-active-default {
+    background: rgba(108,99,255,0.18);
+    border-color: var(--accent);
+    color: var(--accent-light);
+    box-shadow: 0 0 12px rgba(108,99,255,0.25);
+}
+
 /* Responsive */
 @media(max-width: 768px) {
     .settings-top-header { flex-direction: column; align-items: stretch; gap: 14px; padding: 16px; }
@@ -941,6 +1064,14 @@
 <script>
 let selectedProvider = '{{ $activeProvider }}';
 
+const providerNames = {
+    openai: 'OpenAI',
+    openrouter: 'OpenRouter',
+    claude: 'Claude',
+    gemini: 'Gemini',
+    ollama: 'Ollama'
+};
+
 // ===== SUBNAV TAB SWITCHING =====
 document.querySelectorAll('.settings-nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -955,12 +1086,61 @@ document.querySelectorAll('.settings-nav-item').forEach(btn => {
 // ===== PROVIDER CARD SELECTION =====
 document.querySelectorAll('.provider-card').forEach(card => {
     card.addEventListener('click', () => {
-        selectedProvider = card.dataset.provider;
-        document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
+        const prov = card.dataset.provider;
         document.querySelectorAll('.provider-panel').forEach(p => p.style.display = 'none');
-        const activePanel = document.getElementById('panel-' + selectedProvider);
+        const activePanel = document.getElementById('panel-' + prov);
         if (activePanel) activePanel.style.display = '';
+    });
+});
+
+// ===== MODEL MODE TOGGLE (PRESET VS CUSTOM) =====
+document.querySelectorAll('.model-toggle-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        const fieldId = pill.dataset.target;
+        const mode = pill.dataset.mode;
+        const parent = document.getElementById('component-' + fieldId);
+        if (!parent) return;
+
+        parent.querySelectorAll('.model-toggle-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        const presetView = parent.querySelector('.model-mode-preset');
+        const customView = parent.querySelector('.model-mode-custom');
+
+        if (mode === 'preset') {
+            presetView?.classList.remove('hidden');
+            customView?.classList.add('hidden');
+        } else {
+            presetView?.classList.add('hidden');
+            customView?.classList.remove('hidden');
+            parent.querySelector('.custom-model-styled-input')?.focus();
+        }
+    });
+});
+
+// ===== SET AS DEFAULT PROVIDER BUTTONS =====
+document.querySelectorAll('.btn-set-default').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const provider = btn.dataset.provider;
+        selectedProvider = provider;
+
+        // Update card active highlights
+        document.querySelectorAll('.provider-card').forEach(c => {
+            c.classList.toggle('active', c.dataset.provider === provider);
+        });
+
+        // Update default button texts
+        document.querySelectorAll('.btn-set-default').forEach(b => {
+            const isMatch = b.dataset.provider === provider;
+            b.classList.toggle('is-active-default', isMatch);
+            const label = b.querySelector('.btn-default-text');
+            if (label) label.textContent = isMatch ? 'Current Default Engine' : 'Set as Default Engine';
+        });
+
+        // Save immediately
+        await saveSettings(btn);
+        toast(`⭐ Default AI Engine set to ${providerNames[provider] || provider}!`, 'success');
     });
 });
 
@@ -1004,14 +1184,6 @@ document.querySelectorAll('.btn-param-preset').forEach(btn => {
     });
 });
 
-// ===== MANUAL MODEL HIGHLIGHT =====
-document.querySelectorAll('.model-manual-input').forEach(inp => {
-    inp.addEventListener('input', () => {
-        inp.classList.toggle('has-value', inp.value.trim().length > 0);
-    });
-    if (inp.value.trim()) inp.classList.add('has-value');
-});
-
 // ===== FETCH MODELS AJAX =====
 document.querySelectorAll('.btn-fetch-models').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -1044,24 +1216,30 @@ document.querySelectorAll('.btn-fetch-models').forEach(btn => {
 
 // ===== COLLECT PAYLOAD =====
 function collectPayload() {
-    const manualModel = (fieldId) => {
-        const manualInp = document.getElementById(fieldId + '_manual');
-        const selectEl  = document.getElementById(fieldId);
-        return manualInp?.value.trim() || selectEl?.value || '';
+    const resolveModel = (fieldId) => {
+        const component = document.getElementById('component-' + fieldId);
+        const isCustomActive = component?.querySelector('.model-toggle-pill[data-mode="custom"]')?.classList.contains('active');
+        const customVal = document.getElementById(fieldId + '_manual')?.value.trim();
+        const selectVal = document.getElementById(fieldId)?.value;
+
+        if (isCustomActive && customVal) {
+            return customVal;
+        }
+        return selectVal || customVal || '';
     };
 
     return {
         ai_provider:        selectedProvider,
         openai_api_key:     document.getElementById('openai_api_key')?.value     || '',
-        openai_model:       manualModel('openai_model'),
+        openai_model:       resolveModel('openai_model'),
         openrouter_api_key: document.getElementById('openrouter_api_key')?.value || '',
-        openrouter_model:   manualModel('openrouter_model'),
+        openrouter_model:   resolveModel('openrouter_model'),
         claude_api_key:     document.getElementById('claude_api_key')?.value     || '',
-        claude_model:       manualModel('claude_model'),
+        claude_model:       resolveModel('claude_model'),
         gemini_api_key:     document.getElementById('gemini_api_key')?.value     || '',
-        gemini_model:       manualModel('gemini_model'),
+        gemini_model:       resolveModel('gemini_model'),
         ollama_url:         document.getElementById('ollama_url')?.value         || '',
-        ollama_model:       manualModel('ollama_model'),
+        ollama_model:       resolveModel('ollama_model'),
         system_prompt:      document.getElementById('system_prompt')?.value      || '',
         temperature:        document.getElementById('temperature')?.value        || '0.7',
         max_tokens:         document.getElementById('max_tokens')?.value         || '2048',
