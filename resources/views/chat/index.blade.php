@@ -590,12 +590,12 @@ async function sendMessage() {
     msgCount++;
     updateStats();
 
-    // Show typing
+    // Set typing state
     isTyping = true;
     document.getElementById('btn-send').disabled = true;
-    showTypingIndicator();
 
     if (isCompareMode) {
+        showTypingIndicator();
         const providerA = document.getElementById('compare-provider-a').value;
         const providerB = document.getElementById('compare-provider-b').value;
 
@@ -626,13 +626,41 @@ async function sendMessage() {
     const body = { conversation_id: currentConversationId, message: msg };
     if (currentPersonaId) body.persona_id = currentPersonaId;
 
-    // Render assistant placeholder message bubble
-    const aiEl = renderMessage('assistant', '', { model: 'Streaming…' });
+    // Get Persona info
+    const activePersona = (typeof personas !== 'undefined') ? personas.find(p => p.id == currentPersonaId) : null;
+    const aiAvatar = activePersona?.icon || '🤖';
+    const aiName = activePersona?.name || 'AI Assistant';
+
+    // 🌟 Render Assistant Chat Bubble FIRST with thinking dots inside the bubble
+    const aiEl = document.createElement('div');
+    aiEl.className = 'message assistant';
+    aiEl.dataset.pending = 'true';
+    aiEl.innerHTML = `
+        <div class="msg-avatar" style="${activePersona?.icon ? 'background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.3)' : ''}">${aiAvatar}</div>
+        <div class="msg-body">
+            <div class="msg-meta">
+                <strong>${escapeHtml(aiName)}</strong>
+                <span class="token-badge streaming-badge" style="color:var(--accent-light);font-weight:700">● Thinking…</span>
+            </div>
+            <div class="msg-bubble">
+                <div class="md-content">
+                    <div class="ai-thinking-placeholder">
+                        <span class="thinking-dot"></span>
+                        <span class="thinking-dot"></span>
+                        <span class="thinking-dot"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     getMessagesArea().appendChild(aiEl);
     scrollToBottom();
+
     const mdContainer = aiEl.querySelector('.md-content');
+    const streamingBadge = aiEl.querySelector('.streaming-badge');
 
     let fullText = '';
+    let hasStartedStreaming = false;
 
     try {
         const response = await fetch('{{ route("conversations.stream") }}', {
@@ -644,8 +672,6 @@ async function sendMessage() {
             },
             body: JSON.stringify(body),
         });
-
-        removeTypingIndicator();
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -669,6 +695,10 @@ async function sendMessage() {
                     const data = JSON.parse(jsonStr);
 
                     if (data.chunk) {
+                        if (!hasStartedStreaming) {
+                            hasStartedStreaming = true;
+                            if (streamingBadge) streamingBadge.textContent = '● Streaming…';
+                        }
                         fullText += data.chunk;
                         if (mdContainer) {
                             mdContainer.innerHTML = marked.parse(fullText) + '<span class="streaming-cursor">▌</span>';
@@ -2760,6 +2790,31 @@ window.addEventListener('DOMContentLoaded', () => {
 @keyframes typingPulseAnim {
     0%, 100% { opacity: 0.3; transform: scale(0.8); }
     50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* In-Bubble AI Thinking Wave */
+.ai-thinking-placeholder {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 2px;
+    min-height: 24px;
+}
+.thinking-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: inline-block;
+    animation: thinkingDotBounce 1.4s infinite ease-in-out both;
+}
+.thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+.thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+.thinking-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes thinkingDotBounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
+    40% { transform: scale(1.15); opacity: 1; }
 }
 </style>
 @endpush
