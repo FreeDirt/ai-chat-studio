@@ -1,0 +1,27 @@
+# Dependencies
+/node_modules
+/vendor
+
+# Environment & Config
+.env
+.env.*
+!.env.example
+
+# Storage & Logs
+storage/app/*
+!storage/app/.gitignore
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+!storage/logs/.gitignore
+storage/*.key
+public/storage
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.fleet/
+*.log
